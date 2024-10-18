@@ -1,14 +1,17 @@
+import os
 import socket
 import ssl
 class URL:
     def __init__(self, url):
         self.scheme, url = url.split("://", 1)
-        assert self.scheme in ["http", "https"]
+        assert self.scheme in ["http", "https", "file"]
 
         if self.scheme == "http":
             self.port = 80
         elif self.scheme == "https":
             self.port = 443
+        elif self.scheme == "file":
+            self.file_path = url 
 
         if "/" not in url:
             url = url + "/"
@@ -61,6 +64,13 @@ class URL:
 
         return content
 
+    def local_file(self):
+        if os.path.exists(self.file_path):
+            with open(self.file_path, 'r') as file:
+                return file.read()
+        else:
+            return "404 Not Found: File does not exist."
+
 def show(body):
     in_tag = False
     for c in body:
@@ -72,7 +82,7 @@ def show(body):
             print(c, end="")
 
 def load(url):
-    body = url.request()
+    body = url.local_file() if url.scheme == "file" else url.request()
     show(body)
 
 if __name__ == "__main__":
