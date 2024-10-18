@@ -35,7 +35,10 @@ class URL:
 
         request = "GET {} HTTP/1.0\r\n".format(self.path)
         request += "Host: {}\r\n".format(self.host)
-        request += "\r\n"
+        request += "Connection: close\r\n"  # Add the Connection header here
+        request += "User-Agent: stokebrowser/1.0\r\n"  # Add the User-Agent header
+        request += "\r\n"  # This marks the end of headers
+
         s.send(request.encode("utf8"))
 
         response = s.makefile("r", encoding="utf8", newline="\r\n")
