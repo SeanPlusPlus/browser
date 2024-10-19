@@ -12,6 +12,8 @@ class URL:
             self.port = 443
         elif self.scheme == "file":
             self.file_path = url 
+        elif self.scheme == "data":
+            self.file_path = url 
 
         if "/" not in url:
             url = url + "/"

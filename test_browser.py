@@ -47,6 +47,13 @@ class TestBrowser(unittest.TestCase):
         body = get_body(url)
 
         self.assertEqual(body, "404 Not Found: File does not exist.")
+    
+    def test_valid_data_url(self):
+        # Test with a valid data URL
+        data_url = "data:text/html,Hello"
+        mime_type, data = process_data_url(data_url)
+        self.assertEqual(mime_type, "text/html")
+        self.assertEqual(data, "Hello")
 
 if __name__ == "__main__":
     unittest.main()
