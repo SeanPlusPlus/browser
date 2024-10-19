@@ -81,9 +81,13 @@ def show(body):
         elif not in_tag:
             print(c, end="")
 
+def get_body(url):
+    if url.scheme == "file":
+        return url.local_file()
+    return url.request()
+
 def load(url):
-    body = url.local_file() if url.scheme == "file" else url.request()
-    show(body)
+    show(get_body(url))
 
 if __name__ == "__main__":
     import sys
