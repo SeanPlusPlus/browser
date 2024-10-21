@@ -1,6 +1,8 @@
 import os
 import socket
 import ssl
+from html_entities import html_entities
+
 class URL:
     def __init__(self, url):
         if '://' in url:
@@ -104,3 +106,5 @@ if __name__ == "__main__":
     import sys
     arg = sys.argv[1] if len(sys.argv) > 1 else 'file:///Users/Sean.M.Stephenson/hello'
     load(URL(arg))
+    for entity in html_entities:
+        print(entity)
