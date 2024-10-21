@@ -3,8 +3,12 @@ import socket
 import ssl
 class URL:
     def __init__(self, url):
-        self.scheme, url = url.split("://", 1)
-        assert self.scheme in ["http", "https", "file"]
+        if '://' in url:
+            self.scheme, url = url.split("://", 1) 
+        else:
+            self.scheme, url = url.split(":", 1) 
+
+        assert self.scheme in ["http", "https", "file", "data"]
 
         if self.scheme == "http":
             self.port = 80
@@ -13,7 +17,7 @@ class URL:
         elif self.scheme == "file":
             self.file_path = url 
         elif self.scheme == "data":
-            self.file_path = url 
+            self.data = url 
 
         if "/" not in url:
             url = url + "/"
@@ -73,6 +77,9 @@ class URL:
         else:
             return "404 Not Found: File does not exist."
 
+    def raw_data(self):
+        return self.data.split('text/html,', 1)
+
 def show(body):
     in_tag = False
     for c in body:
@@ -86,6 +93,8 @@ def show(body):
 def get_body(url):
     if url.scheme == "file":
         return url.local_file()
+    if url.scheme == "data":
+        return url.raw_data()
     return url.request()
 
 def load(url):
