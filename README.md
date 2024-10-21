@@ -20,6 +20,8 @@ Run
 
 ```
 python browser.py https://browser.engineering/examples/example1-simple.html
+python browser.py file:///path/to/file/hello 
+python browser.py data:text/html,Hello
 ```
 
 
