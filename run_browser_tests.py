@@ -1,6 +1,8 @@
 import os
 import sys
-from browser import URL, get_body  # Assuming your previous script is named 'browser.py'
+import io
+from contextlib import redirect_stdout
+from browser import URL, get_body, show  # Assuming your previous script is named 'browser.py'
 
 # Unicode symbols for success and failure
 GREEN_CHECK = '\u2705'  # ✔
@@ -9,8 +11,9 @@ RED_X = '\u274C'        # ✖
 def run_tests(verbose=False):
     tests = [
         ("data:text/html,Hello", "Hello"),
-        ("file:///Users/Sean.M.Stephenson/hello", "hello world"),  # Adjust this if needed based on your file content.
-        ("https://browser.engineering/examples/example1-simple.html", "<html>\n  <body>\n    <div>This is a simple</div>\n    <div>web page with some</div>\n    <span>text in it.</span>\n  </body>\n</html>"),
+        ("data:text/html,&lt;div&gt;Hello", "<div>Hello"),
+        ("file:///Users/Sean.M.Stephenson/hello", "hello world"),
+        ("https://browser.engineering/examples/example1-simple.html", "This is a simple\n    web page with some\n    text in it."),
     ]
     
     for test_case, expected_output in tests:
@@ -18,17 +21,16 @@ def run_tests(verbose=False):
         try:
             url = URL(test_case)
             result = get_body(url)
-            
-            # Handle cases where result is a list (e.g., data URLs)
-            if isinstance(result, list):
-                result = ''.join(result).strip()  # Join the list elements and strip whitespace
-            else:
-                result = result.strip()  # Just strip if it's a string
+
+            # Capture the output of the `show` function
+            with io.StringIO() as buf, redirect_stdout(buf):
+                show(result)
+                output = buf.getvalue().strip()
 
             if verbose:
-                print(f"Output: {result}")
-            
-            assert result == expected_output, f"Test failed for URL: {test_case}. Expected: '{expected_output}', got: '{result}'"
+                print(f"Output: {output}")
+
+            assert output == expected_output, f"Test failed for URL: {test_case}. Expected: '{expected_output}', got: '{output}'"
             print(f"Test passed. {GREEN_CHECK}\n")
         except AssertionError as e:
             print(f"{RED_X} {e}\n")

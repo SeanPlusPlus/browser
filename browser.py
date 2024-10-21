@@ -1,8 +1,8 @@
 import os
 import socket
 import ssl
-from html_entities import html_entities
 
+from html_entities import replace_html_entities
 class URL:
     def __init__(self, url):
         if '://' in url:
@@ -90,7 +90,7 @@ def show(body):
         elif c == ">":
             in_tag = False
         elif not in_tag:
-            print(c, end="")
+            print(replace_html_entities(c), end="")
 
 def get_body(url):
     if url.scheme == "file":
@@ -106,5 +106,3 @@ if __name__ == "__main__":
     import sys
     arg = sys.argv[1] if len(sys.argv) > 1 else 'file:///Users/Sean.M.Stephenson/hello'
     load(URL(arg))
-    for entity in html_entities:
-        print(entity)
