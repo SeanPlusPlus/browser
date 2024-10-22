@@ -36,8 +36,26 @@ class URL:
             self.port = int(port)
 
         self.path = "/" + url
+        self.socket = None  # Add an instance variable to keep the socket
+
 
     def request(self):
+        if self.socket is None:
+            s = socket.socket(
+                family=socket.AF_INET,
+                type=socket.SOCK_STREAM,
+                proto=socket.IPPROTO_TCP,
+            )
+            s.connect((self.host, self.port))
+
+            if self.scheme == "https":
+                ctx = ssl.create_default_context()
+                s = ctx.wrap_socket(s, server_hostname=self.host)
+
+            self.socket = s  # Save the socket for reuse
+        else:
+            s = self.socket  # Reuse the existing socket
+
         s = socket.socket(
             family=socket.AF_INET,
             type=socket.SOCK_STREAM,
@@ -52,7 +70,7 @@ class URL:
 
         request = "GET {} HTTP/1.0\r\n".format(self.path)
         request += "Host: {}\r\n".format(self.host)
-        request += "Connection: close\r\n"  # Add the Connection header here
+        request += "Connection: keep-alive\r\n"  # Add the Connection header here
         request += "User-Agent: stokebrowser/1.0\r\n"  # Add the User-Agent header
         request += "\r\n"  # This marks the end of headers
 
@@ -73,7 +91,9 @@ class URL:
         assert "transfer-encoding" not in response_headers
         assert "content-encoding" not in response_headers
 
-        content = response.read()
+        content_length = int(response_headers.get('content-length', 0))
+        content = response.read(content_length)  # Read exactly 'content-length' bytes
+
         s.close()
 
         return content
