@@ -5,6 +5,8 @@ import ssl
 from html_entities import replace_html_entities
 class URL:
     def __init__(self, url):
+        self.view_source = False
+
         if url.startswith('view-source:'):
             url = url.split('view-source:')[1]
             self.scheme, url = url.split("://", 1) 
@@ -86,7 +88,11 @@ class URL:
     def raw_data(self):
         return self.data.split('text/html,', 1)
 
-def show(body):
+def show(body, view_source):
+    if view_source:
+        print(body, end="")
+        return
+
     in_tag = False
     for c in body:
         if c == "<":
@@ -97,8 +103,6 @@ def show(body):
             print(replace_html_entities(c), end="")
 
 def get_body(url):
-    print(url.view_source) if hasattr(url, 'view_source') else None
-
     if url.scheme == "file":
         return url.local_file()
     if url.scheme == "data":
@@ -106,7 +110,7 @@ def get_body(url):
     return url.request()
 
 def load(url):
-    show(get_body(url))
+    show(get_body(url), url.view_source)
 
 if __name__ == "__main__":
     import sys
