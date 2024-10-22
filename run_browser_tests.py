@@ -16,9 +16,9 @@ def run_tests(verbose=False):
          "This is a simple\n    web page with some\n    text in it."),
         ("Test view-source URL", "view-source:https://browser.engineering/examples/example1-simple.html", 
          "<html>\n  <body>\n    <div>This is a simple</div>\n    <div>web page with some</div>\n    <span>text in it.</span>\n  </body>\n</html>"),
-        ("Test text", "https://browser.engineering/http.html", 'A web browser displays information identified by a URL.', True)
+        ("Test text", "https://browser.engineering/http.html", 'A web browser displays information identified by a URL.', True),
         # For this test, we're checking for a specific string in the redirected page
-        # ("Test 301", "http://browser.engineering/redirect", 'A web browser displays information identified by a URL.', True)
+        ("Test 301", "http://browser.engineering/redirect", 'A web browser displays information identified by a URL.', True)
     ]
 
     for test in tests:
